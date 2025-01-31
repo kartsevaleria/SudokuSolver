@@ -5,6 +5,7 @@
 #include <QHeaderView>
 #include <QAbstractItemView>
 #include "sudokutablemodel.h"
+#include "solver.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -28,6 +29,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     sudokuTableModel* model;
+    Solver* solver;
 
     void initTable();
 };

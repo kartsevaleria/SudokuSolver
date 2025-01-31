@@ -17,9 +17,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
+        solver.cpp
         sudokutablemodel.cpp
         mainwindow.h
         sudokutablemodel.h
+        solver.h
         mainwindow.ui
 
 )
