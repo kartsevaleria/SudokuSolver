@@ -5,6 +5,7 @@
 #include <QHeaderView>
 #include <QAbstractItemView>
 #include "sudokutablemodel.h"
+#include "customitemdelegate.h"
 #include "solver.h"
 
 QT_BEGIN_NAMESPACE
@@ -29,6 +30,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     sudokuTableModel* model;
+    customItemDelegate* customItem;
     Solver* solver;
 
     void initTable();

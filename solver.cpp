@@ -8,10 +8,10 @@ bool Solver::isValid(const int col, const int row)
         return false;
 }
 
-int Solver::getNumber(const int col, const int row)
+int Solver::getNumber(const int row, const int col)
 {
     if(isValid(col, row))
-        return matrix[col][row];
+        return matrix[row][col];
     else
         return -1;
 }
@@ -49,11 +49,9 @@ bool Solver::setMatrix(const sudokuTableModel* sudokuModel)
 bool Solver::colIsSafe(const int col, const int row, int num)
 {
     int numCol = col;
-    for(int i = 0; i < cnt_section; ++i)
+    for(int i = 0; i < cnt_section; i++)
     {
-        if(i == row)
-            continue;
-        if(matrix[numCol][i] == num)
+        if(matrix[i][numCol] == num)
             return false;
     }
     return true;
@@ -62,11 +60,9 @@ bool Solver::colIsSafe(const int col, const int row, int num)
 bool Solver::rowIsSafe(const int col, const int row, int num)
 {
     int numRow = row;
-    for(int i = 0; i < cnt_section; ++i)
+    for(int i = 0; i < cnt_section; i++)
     {
-        if(i == col)
-            continue;
-        if(matrix[i][numRow] == num)
+        if(matrix[numRow][i] == num)
             return false;
     }
     return true;
@@ -76,6 +72,7 @@ bool Solver::squareIsSafe(const int col, const int row, int num)
 {
     int startCol, endCol;
     int startRow, endRow;
+
     //Определение нужного квадрата
     for(endCol = 2; endCol < cnt_section; endCol+=3)
         if(col <= endCol) break;
@@ -83,23 +80,15 @@ bool Solver::squareIsSafe(const int col, const int row, int num)
     for(endRow = 2; endRow < cnt_section; endRow+=3)
         if(row <= endRow) break;
 
-    if(endRow == 2)
-        startRow = 0;
-    else
-        startRow = endRow - 2;
 
-    if(endCol == 2)
-        startCol = 0;
-    else
-        startCol = endCol - 2;
+    startRow = endRow - 2;
+    startCol = endCol - 2;
 
 
-    for(int i = startCol; i <= endCol; i++)
+    for(int i = startRow; i <= endRow; i++)
     {
-        for(int j = startRow; j <= endRow; j++)
+        for(int j = startCol; j <= endCol; j++)
         {
-            if(i == col && j == row)
-                continue;
             if(matrix[i][j] == num)
                 return false;
         }
@@ -108,7 +97,7 @@ bool Solver::squareIsSafe(const int col, const int row, int num)
     return true;
 }
 
-bool Solver::isSafe(const int col, const int row, int num)
+bool Solver::isSafe(const int row, const int col, int num)
 {
     if(colIsSafe(col, row, num) && rowIsSafe(col, row, num) && squareIsSafe(col, row, num))
         return true;
@@ -117,55 +106,40 @@ bool Solver::isSafe(const int col, const int row, int num)
 }
 
 //Передавать индекс начала прохода? чтобы не начинал обход каждый раз заново
-bool Solver::solve(int colNull, int rowNull)
+bool Solver::solve()
 {
-    int nextColNull;
-    int nextRowNull;
     bool flagNull = false;
-    for(; colNull < cnt_section; colNull++)
+    int rowNull, colNull;
+    for(int i = 0; i < cnt_section; i++)
     {
-        for(; rowNull < cnt_section; rowNull++)
+        for(int j = 0; j < cnt_section; j++)
         {
-            if(!definedValues[colNull][rowNull])
+            if(matrix[i][j] == 0)
             {
+                rowNull = i;
+                colNull = j;
                 flagNull = true;
                 break;
             }
 
         }
+
         if(flagNull)
             break;
     }
-
+    //Если значения флага не поменялось, значит больше нет пустых клеток
+    if(!flagNull)
+        return true;
 
     for(int i = 1; i < 10; i++)
     {
-
-        if(isSafe(colNull, rowNull, i))
+        if(isSafe(rowNull, colNull, i))
         {
-            matrix[colNull][rowNull] = i;
-            qDebug() << "row: " << rowNull ;
-            qDebug() << "col: " << colNull;
-            qDebug() << "i: " << i;
-            qDebug() << " ";
-            if(rowNull == 8)
-            {
-                nextRowNull = 0;
-                nextColNull = colNull + 1;
-            }
-            else
-            {
-                nextRowNull = rowNull + 1;
-                nextColNull = colNull;
-            }
-
-
-            if(solve(nextColNull, nextRowNull))
+            matrix[rowNull][colNull] = i;
+            if(solve())
                 return true;
-
-            matrix[colNull][rowNull] = 0;
+            matrix[rowNull][colNull] = 0;
         }
-
     }
     return false;
 }

@@ -40,7 +40,7 @@ public:
 
     bool setMatrix(const sudokuTableModel* model);
     //Возвращает исключение, если не может решить
-    bool solve(int colNull = 0, int rowNull = 0);
+    bool solve();
     int getNumber(const int col, const int row);
 };
 

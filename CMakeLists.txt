@@ -19,8 +19,10 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         solver.cpp
         sudokutablemodel.cpp
+        customitemdelegate.cpp
         mainwindow.h
         sudokutablemodel.h
+        customitemdelegate.h
         solver.h
         mainwindow.ui
 
