@@ -8,14 +8,24 @@ sudokuTableModel::sudokuTableModel(QObject* parent) : QAbstractTableModel( paren
     flagEdit = true;
 
     m_sudoku = new int*[cnt_section];
+    m_nullElem = new bool*[cnt_section];
+
     for(int i = 0; i < cnt_section; i++)
-        m_sudoku[i] = new int[9];
+    {
+        m_sudoku[i] = new int[cnt_section];
+        m_nullElem[i] = new bool[cnt_section];
+    }
+
 
 
     for(int i = 0; i < cnt_section; i++)
     {
         for(int j = 0; j < cnt_section; j++)
+        {
             m_sudoku[i][j] = 0;
+            m_nullElem[i][j] = false;
+        }
+
     }
 
 }
@@ -109,13 +119,45 @@ void sudokuTableModel::clear()
     for(int i = 0; i < cnt_section; i++)
     {
         for(int j = 0; j < cnt_section; j++)
-            m_sudoku[i][j] = 0;
+            this->setData(this->index(i, j, QModelIndex()), 0, Qt::EditRole);
     }
+}
+
+void sudokuTableModel::pullNullMatrix()
+{
+    for(int i = 0; i < cnt_section; i++)
+    {
+        for(int j = 0; j < cnt_section; j++)
+        {
+            if(m_sudoku[i][j] == 0)
+                m_nullElem[i][j] = true;
+        }
+    }
+}
+
+void sudokuTableModel::clearNullMatrix()
+{
+    for(int i = 0; i < cnt_section; i++)
+    {
+        for(int j = 0; j < cnt_section; j++)
+            m_nullElem[i][j] = false;
+
+    }
+}
+
+void sudokuTableModel::isNullElem(const QModelIndex &index, bool &isNull)
+{
+    isNull = m_nullElem[index.row()][index.column()];
 }
 
 sudokuTableModel::~sudokuTableModel()
 {
     for(int i = 0; i < cnt_section; i++)
+    {
         delete [] m_sudoku[i];
+        delete [] m_nullElem[i];
+    }
+
     delete m_sudoku;
+    delete m_nullElem;
 }

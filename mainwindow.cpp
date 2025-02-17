@@ -9,6 +9,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     model = new sudokuTableModel;
     customItem = new customItemDelegate;
+
+    QObject::connect(this, SIGNAL(click_solve()), model, SLOT(pullNullMatrix()));
+    QObject::connect(this, SIGNAL(click_clear()), model, SLOT(clearNullMatrix()));
+    QObject::connect(customItem, SIGNAL(updateIsNull(const QModelIndex&, bool&)), model, SLOT(isNullElem(const QModelIndex&, bool&)));
+
     customItem->setSourceModel(model);
     ui->sudokuTableView->setModel(customItem);
     model->setElemForDebug();
@@ -29,8 +34,6 @@ void MainWindow::initTable()
 
     ui->sudokuTableView->setEditTriggers(QTableView::AllEditTriggers);
 
-    //ui->sudokuTableView->setStyleSheet("QHeaderView::section { background-color:red }");
-
 }
 
 MainWindow::~MainWindow()
@@ -42,6 +45,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_to_solve_clicked()
 {
+    emit click_solve();
     //Заблокировать изменение таблицы
     model->isEditable(0);
     solver->setMatrix(model);
@@ -57,13 +61,11 @@ void MainWindow::on_to_solve_clicked()
                 {
                     model->setData(model->index(i, j, QModelIndex()), QVariant(solver->getNumber(i, j)), Qt::EditRole);
                 }
-
-
             }
         }
     }
     else
-        qDebug() << "Ошибка";
+        QErrorMessage::showMessage("Нет  Решения");
 
     qDebug() << "end all";
 }
@@ -72,8 +74,8 @@ void MainWindow::on_to_solve_clicked()
 void MainWindow::on_to_clear_clicked()
 {
     //Разблокировать изменение таблицы
+    //emit click_clear();
     model->isEditable(1);
     model->clear();
-    model->submit();
 }
 

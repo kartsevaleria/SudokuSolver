@@ -19,20 +19,25 @@ public:
     QVariant data(const QModelIndex& index, int role) const;
     QVariant headerData( int section, Qt::Orientation orientation, int role ) const {return QVariant::Int;}
     Qt::ItemFlags flags( const QModelIndex& index ) const;
-    void setElemForDebug();
 
+    void setElemForDebug();
     void isEditable(bool flag);
     void clear();
+
 //public slots:
 //    void changeFlagLock(bool flag);
 
 private:
     int cnt_section;
     int** m_sudoku;
-    //bool** m_nullElem;
+    bool** m_nullElem;
     bool flagEdit;
 
     //void createMatrixNullElem();
+public slots:
+    void pullNullMatrix();
+    void clearNullMatrix();
+    void isNullElem(const QModelIndex& index, bool &isNull);
 
 };
 

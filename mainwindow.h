@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QHeaderView>
 #include <QAbstractItemView>
+#include <QErrorMessage>
 #include "sudokutablemodel.h"
 #include "customitemdelegate.h"
 #include "solver.h"
@@ -23,9 +24,11 @@ public:
 
 private slots:
     void on_to_solve_clicked();
-
     void on_to_clear_clicked();
 
+signals:
+    void click_solve();
+    void click_clear();
 
 private:
     Ui::MainWindow *ui;
