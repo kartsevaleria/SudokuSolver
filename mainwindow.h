@@ -5,6 +5,7 @@
 #include <QHeaderView>
 #include <QAbstractItemView>
 #include <QErrorMessage>
+#include <QElapsedTimer>
 #include "sudokutablemodel.h"
 #include "customitemdelegate.h"
 #include "solver.h"
@@ -37,5 +38,6 @@ private:
     Solver* solver;
 
     void initTable();
+    void initComboBox();
 };
 #endif // MAINWINDOW_H

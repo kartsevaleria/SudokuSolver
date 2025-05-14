@@ -18,7 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->sudokuTableView->setModel(customItem);
     model->setElemForDebug();
     solver = new Solver(model->columnCount(QModelIndex()));
+
     initTable();
+    initComboBox();
 }
 
 void MainWindow::initTable()
@@ -36,6 +38,12 @@ void MainWindow::initTable()
 
 }
 
+void MainWindow::initComboBox()
+{
+    ui->cb_algorithm->addItem("Обратного отслеживания");
+    ui->cb_algorithm->addItem("Обратного отслеживания с сортировкой");
+}
+
 MainWindow::~MainWindow()
 {
 
@@ -49,32 +57,49 @@ void MainWindow::on_to_solve_clicked()
     //Заблокировать изменение таблицы
     model->isEditable(0);
     solver->setMatrix(model);
+    qint64 timer;
 
-    if(solver->solve())
+    bool isSolve;
+    try
     {
+        isSolve = solver->solve(timer, ui->cb_algorithm->currentIndex());
+    }
+    catch (const char* what)
+    {
+        QErrorMessage error;
+        error.showMessage(what);
+        error.exec();
+    }
+
+    if(isSolve)
+    {
+        ui->calcTime->setText(QString::number(timer));
         for(int i = 0; i < model->columnCount(QModelIndex()); i++)
         {
             for(int j = 0; j < model->rowCount(QModelIndex()); j++)
             {
                 QVariant elem = model->data(model->index(i, j, QModelIndex()), Qt::EditRole);
                 if(elem.toInt() == 0)
-                {
                     model->setData(model->index(i, j, QModelIndex()), QVariant(solver->getNumber(i, j)), Qt::EditRole);
-                }
             }
         }
     }
     else
-        QErrorMessage::showMessage("Нет  Решения");
+    {
+        ui->calcTime->setText(" ");
+        QErrorMessage error;
+        error.showMessage("Нет решения");
+        error.exec();
+    }
 
-    qDebug() << "end all";
 }
 
 
 void MainWindow::on_to_clear_clicked()
 {
     //Разблокировать изменение таблицы
-    //emit click_clear();
+    emit click_clear();
+    ui->calcTime->setText(" ");
     model->isEditable(1);
     model->clear();
 }
